@@ -4,8 +4,9 @@ import assert from 'node:assert/strict'
 import { rm } from 'node:fs/promises'
 import { after, describe, it } from 'node:test'
 import { LocalAttachmentStore } from '@deepseek-ai/dsh-attachment-local'
+import Schema from '@deepseek-ai/schemastery'
 import sharp from 'sharp'
-import { ImageRequestPreprocessStore } from '../src/adapter/store.js'
+import { Config, ImageRequestPreprocessStore } from '../src/adapter/store.js'
 import { decodeRaster, rasterEqual, renderRaster, requestPipeline } from '../src/core/codec.js'
 import { fakeContext, noisePng, screenshotLikePng, tempHome } from './helpers.mjs'
 
@@ -43,6 +44,17 @@ async function saveScreenshot(store) {
 }
 
 describe('attachments 提供者接管', () => {
+  it('配置 schema 保留官方附件字段并补上本插件字段', () => {
+    assert.ok(Config.dict.maxImageBytes, '官方 maxImageBytes 必须仍然可配置')
+    assert.ok(Config.dict.normalizedImageMaxPixels, '官方 normalizedImageMaxPixels 必须仍然可配置')
+    assert.ok(Config.dict.imageCompressionConcurrency)
+    const [resolved] = Schema.resolve({}, Config)
+    assert.equal(resolved.enabled, true)
+    assert.equal(resolved.webpLossless, true)
+    assert.equal(resolved.pngOptimize, true)
+    assert.equal(resolved.effort, 4)
+  })
+
   it('无损候选严格更小时替换请求版本，并保持像素等价', async () => {
     const { native, store } = await fixtures()
     const ref = await saveScreenshot(store)
