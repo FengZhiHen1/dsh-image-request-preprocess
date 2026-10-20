@@ -1,0 +1,9 @@
+# 本插件以自己的 attachments 提供者取代官方 attachment-local：
+# 只重写 readImageRequest，其余（存储、准入、校验、文件、读取）全部继承官方实现。
+# 禁用行后必须由下方行提供 ctx.attachments，两行是一组，不能只留其一。
+- id: attachment-local
+  disabled: true
+
+- insert:
+    - id: image-request-preprocess
+      name: dsh-image-request-preprocess

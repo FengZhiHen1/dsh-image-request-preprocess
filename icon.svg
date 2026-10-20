@@ -1,0 +1,16 @@
+<svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="irp-frame" x1="5" y1="7" x2="30" y2="27" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#7FD8FF" />
+      <stop offset="1" stop-color="#2F6BFF" />
+    </linearGradient>
+    <linearGradient id="irp-arrow" x1="27" y1="23" x2="27" y2="32" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#45E7A4" />
+      <stop offset="1" stop-color="#05909D" />
+    </linearGradient>
+  </defs>
+  <rect x="4.6" y="6.6" width="22.8" height="18.8" rx="3.6" stroke="url(#irp-frame)" stroke-width="2.4" />
+  <path d="M8.6 21.4L12.9 16.6L16.3 20.2L18.9 17.5L23.4 22.1" stroke="url(#irp-frame)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+  <circle cx="21.2" cy="11.6" r="1.7" fill="#45E7A4" />
+  <path d="M27.6 24.2V31.2M27.6 31.2L24.9 28.5M27.6 31.2L30.3 28.5" stroke="url(#irp-arrow)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+</svg>
