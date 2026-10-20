@@ -7,6 +7,7 @@ import { LocalAttachmentStore } from '@deepseek-ai/dsh-attachment-local'
 import Schema from '@deepseek-ai/schemastery'
 import sharp from 'sharp'
 import { Config, ImageRequestPreprocessStore } from '../src/adapter/store.js'
+import RootPlugin, { Config as RootConfig } from '../index.js'
 import { decodeRaster, rasterEqual, renderRaster, requestPipeline } from '../src/core/codec.js'
 import { fakeContext, noisePng, screenshotLikePng, tempHome } from './helpers.mjs'
 
@@ -44,6 +45,12 @@ async function saveScreenshot(store) {
 }
 
 describe('attachments 提供者接管', () => {
+  it('包根导出服务类与 Config，且 Config 挂在类上', () => {
+    assert.equal(RootPlugin, ImageRequestPreprocessStore)
+    assert.equal(RootPlugin.Config, RootConfig)
+    assert.equal(RootConfig, Config)
+  })
+
   it('配置 schema 保留官方附件字段并补上本插件字段', () => {
     assert.ok(Config.dict.maxImageBytes, '官方 maxImageBytes 必须仍然可配置')
     assert.ok(Config.dict.normalizedImageMaxPixels, '官方 normalizedImageMaxPixels 必须仍然可配置')
