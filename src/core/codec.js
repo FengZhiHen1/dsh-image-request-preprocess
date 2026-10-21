@@ -4,8 +4,33 @@
 // 请求栅格的构造与官方 attachment-local 的 request-image 流水线保持一致：
 // 同一解码器、同一 sRGB 转换、同一长边缩放（不放大）。候选编码之后必须逐像素等于
 // 该栅格，否则整张图回退原生编码。
+//
+// sharp 是**首次使用时才加载**的原生模块：插件被装载（以及实例上 patch 的应用）不允许
+// 触发第二份 libvips 的初始化，任何加载失败也只落在请求路径的 try/catch 里。
 
-import sharp from 'sharp'
+import { createRequire } from 'node:module'
+
+const requireSharp = createRequire(import.meta.url)
+let sharpEntry
+
+/**
+ * 取 sharp 入口；第一次调用才真正加载原生模块。
+ * @returns {any} sharp 可调用入口
+ */
+function sharp() {
+  sharpEntry ??= requireSharp('sharp')
+  return sharpEntry
+}
+
+/**
+ * 用已编码字节建一条 sharp 流水线。
+ * @param {Uint8Array} bytes 编码字节
+ * @param {object} options sharp 输入选项
+ * @returns {import('sharp').Sharp} 流水线
+ */
+function image(bytes, options) {
+  return sharp()(bytes, options)
+}
 
 const MEDIA_TYPES = {
   png: 'image/png',
@@ -26,7 +51,7 @@ export function requestPipeline(sourceBytes, ref, target) {
   const resize = byWidth
     ? { width: target.width, withoutEnlargement: true }
     : { height: target.height, withoutEnlargement: true }
-  return sharp(sourceBytes, { failOn: 'error', limitInputPixels: false })
+  return image(sourceBytes, { failOn: 'error', limitInputPixels: false })
     .toColourspace('srgb')
     .resize(resize)
 }
@@ -37,7 +62,7 @@ export function requestPipeline(sourceBytes, ref, target) {
  * @returns {Promise<{mediaType: string|undefined, width: number, height: number, hasAlpha: boolean, pages: number, depth: string|undefined, space: string|undefined}>} 元数据
  */
 export async function probeImage(bytes) {
-  const metadata = await sharp(bytes, { failOn: 'error', limitInputPixels: false }).metadata()
+  const metadata = await image(bytes, { failOn: 'error', limitInputPixels: false }).metadata()
   return {
     mediaType: MEDIA_TYPES[metadata.format],
     width: metadata.width,
@@ -65,7 +90,7 @@ export async function renderRaster(pipeline) {
  * @returns {Promise<{data: Uint8Array, width: number, height: number, channels: number}>} 栅格
  */
 export async function decodeRaster(bytes) {
-  const { data, info } = await sharp(bytes, { failOn: 'error', limitInputPixels: false })
+  const { data, info } = await image(bytes, { failOn: 'error', limitInputPixels: false })
     .toColourspace('srgb')
     .ensureAlpha()
     .raw()
