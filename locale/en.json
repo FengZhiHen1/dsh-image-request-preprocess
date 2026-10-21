@@ -1,6 +1,6 @@
 {
   "meta": {
     "title": "Image Request Preprocess",
-    "description": "Replaces model-request images with the smallest strictly lossless encoding (WebP Lossless or optimized PNG) and falls back to the native encoding."
+    "description": "Replaces model-request images with the smallest strictly lossless encoding (WebP Lossless or optimized PNG) and falls back to the native encoding when there is no win, on failure, or when its time budget runs out."
   }
 }

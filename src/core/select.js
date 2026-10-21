@@ -20,3 +20,20 @@ export function chooseSmallest(baseline, candidates) {
   }
   return best
 }
+
+/**
+ * 一个候选还必须低于多少字节才有资格入选。
+ *
+ * 用于省掉注定落选的候选的解码校验：既然比较基准是"原生字节与已通过校验候选"里的
+ * 最小者，编码结果不小于它就不可能被选中，也就不必逐像素比对。
+ * @param {{bytes: number}} baseline 原生请求版本，只需字节数
+ * @param {Array<{bytes: number}>} candidates 已通过校验的候选
+ * @returns {number} 入选所需的严格上界
+ */
+export function smallestBytes(baseline, candidates) {
+  let smallest = baseline.bytes
+  for (const candidate of candidates) {
+    if (candidate.bytes < smallest) smallest = candidate.bytes
+  }
+  return smallest
+}

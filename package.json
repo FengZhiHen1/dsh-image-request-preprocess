@@ -1,7 +1,7 @@
 {
   "name": "dsh-image-request-preprocess",
-  "version": "0.1.0",
-  "description": "DSH 图片请求预处理：为模型请求选择更小的严格无损编码（WebP Lossless / 优化 PNG），无收益或失败时回退原生编码",
+  "version": "0.1.1",
+  "description": "DSH 图片请求预处理：为模型请求选择更小的严格无损编码（WebP Lossless / 优化 PNG），无收益、失败或超出时间预算时回退原生编码",
   "icon": "./icon.svg",
   "license": "MIT",
   "repository": {
@@ -18,9 +18,6 @@
     "./locale/*.json": "./locale/*.json"
   },
   "peerDependencies": {
-    "@deepseek-ai/cordis": "^4.0.5",
-    "@deepseek-ai/dsh-attachment": "0.2.1-rc.2",
-    "@deepseek-ai/dsh-attachment-local": "0.2.1-rc.2",
     "@deepseek-ai/dsh-home-paths": "0.2.1-rc.2",
     "@deepseek-ai/schemastery": "^3.18.4"
   },

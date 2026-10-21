@@ -1,2 +1,2 @@
-// dsh-image-request-preprocess — 包根入口：转出 Host 服务类与 Config。
-export { Config, ImageRequestPreprocessStore as default } from './src/adapter/store.js'
+// dsh-image-request-preprocess — 包根入口：Host 插件导出面（apply / Config / inject / name）。
+export { apply, Config, ImageRequestPreprocessor, inject, name } from './src/adapter/host.js'

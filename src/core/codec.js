@@ -75,6 +75,8 @@ export async function decodeRaster(bytes) {
 
 /**
  * 两张栅格是否逐像素相同。
+ *
+ * 直接比较底层字节视图，不复制：4 MP 栅格是 16 MiB，复制一次就多一份垃圾。
  * @param {{data: Uint8Array, width: number, height: number, channels: number}} left 左
  * @param {{data: Uint8Array, width: number, height: number, channels: number}} right 右
  * @returns {boolean} 尺寸、通道与像素字节全部相同
@@ -82,7 +84,16 @@ export async function decodeRaster(bytes) {
 export function rasterEqual(left, right) {
   if (left.width !== right.width || left.height !== right.height || left.channels !== right.channels) return false
   if (left.data.byteLength !== right.data.byteLength) return false
-  return Buffer.compare(Buffer.from(left.data), Buffer.from(right.data)) === 0
+  return Buffer.compare(view(left.data), view(right.data)) === 0
+}
+
+/**
+ * 把栅格字节包成零拷贝的 Buffer 视图。
+ * @param {Uint8Array} data 栅格字节
+ * @returns {Buffer} 同一段内存上的 Buffer
+ */
+function view(data) {
+  return Buffer.from(data.buffer, data.byteOffset, data.byteLength)
 }
 
 /**

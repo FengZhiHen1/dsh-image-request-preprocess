@@ -1,9 +1,6 @@
-# 本插件以自己的 attachments 提供者取代官方 attachment-local：
-# 只重写 readImageRequest，其余（存储、准入、校验、文件、读取）全部继承官方实现。
-# 禁用行后必须由下方行提供 ctx.attachments，两行是一组，不能只留其一。
-- id: attachment-local
-  disabled: true
-
+# 只插入本插件自己的一行：官方 `attachment-local` 行保持启用，`ctx.attachments`
+# 仍由它提供。本插件在其实例上装饰 `readImageRequest` 并用 ctx.effect 注册还原，
+# 因此启用/停用/卸载本 bundle 都不会让附件服务消失；装饰失败也只是不优化。
 - insert:
     - id: image-request-preprocess
       name: dsh-image-request-preprocess

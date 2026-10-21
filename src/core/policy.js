@@ -7,17 +7,24 @@
 import { createHash } from 'node:crypto'
 
 /** 候选集合与编码参数的语义版本；进入每个请求版本的 variantId。 */
-export const POLICY_VERSION = 'v1'
+export const POLICY_VERSION = 'v2'
 
-/** 未配置时的默认策略：无损候选全开，只在有明显字节量时介入。 */
+/**
+ * 未配置时的默认策略：无损候选全开，只在有明显字节量时介入。
+ *
+ * 默认值按"请求路径上的成本上限"选，不按"最大压缩率"选：`effort` 与 `concurrency`
+ * 直接决定模型请求要等多久、以及同一时刻占用几个原生编码线程；`budgetMs` 是单图
+ * 硬预算，超时即放弃本次优化并回退原生结果。
+ */
 export const DEFAULT_POLICY = Object.freeze({
   enabled: true,
   webpLossless: true,
   pngOptimize: true,
   minBytes: 64 * 1024,
-  effort: 4,
+  effort: 2,
   tryJpegSources: false,
-  concurrency: 2,
+  concurrency: 1,
+  budgetMs: 2500,
 })
 
 /**
@@ -42,6 +49,9 @@ export function resolvePolicy(input = {}) {
   }
   if (!Number.isSafeInteger(policy.concurrency) || policy.concurrency < 1 || policy.concurrency > 8) {
     throw new Error('image-request-preprocess: concurrency must be an integer from 1 through 8')
+  }
+  if (!Number.isSafeInteger(policy.budgetMs) || policy.budgetMs < 1) {
+    throw new Error('image-request-preprocess: budgetMs must be a positive integer')
   }
   return Object.freeze(policy)
 }

@@ -1,6 +1,6 @@
 {
   "meta": {
     "title": "图片请求预处理",
-    "description": "为模型请求选择更小的严格无损编码（WebP Lossless 或优化 PNG），无收益或失败时回退原生编码。"
+    "description": "为模型请求选择更小的严格无损编码（WebP Lossless 或优化 PNG），无收益、失败或超出时间预算时回退原生编码。"
   }
 }
